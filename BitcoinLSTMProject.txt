@@ -1,0 +1,43 @@
+Starting from the LSTM for Bitcoin in
+S10.Miscellaneous\LSTMBitcoin\core\model.py
+and the data in folder LSTMBitcoin
+modify the LSTM:
+Try a couple of modifications:
+1. downgrade the LSTM to an RNN.
+2. upgrade the LSTM to a sequence-to-sequence LSTM,
+such as the one in:
+S10.Miscellaneous\GeronLSTM\notebook51a608fcc4_Geron_mod_LSTM_SPY.ipynb, or
+S10.Miscellaneous\GeronLSTM\Geron_mod_LSTM_SPY.py
+and evaluate how well each modified net trades Bitcoin.
+
+
+The above mentioned LSTM for Bitcoin:
+S10.Miscellaneous\LSTMBitcoin\core\model.py
+uses object oriented programming but
+if  you are not used to this extra layer of abstraction,
+you can adapt this simpler LSTM instead:
+S10.Miscellaneous\LSTMStockPrice\03_multivariate_stacked_lstm.py
+to the Bitcoin data in folder LSTMBitcoin.
+Then, after this adaptation, do what we suggested above; namely,
+try a couple of modifications of the original LSTM:
+downgrade the LSTM to an RNN.
+upgrade the LSTM with a sequence-to-sequence LSTM,
+such as the one in:
+S10.Miscellaneous\GeronLSTM\notebook51a608fcc4_Geron_mod_LSTM_SPY.ipynb, or
+S10.Miscellaneous\GeronLSTM\Geron_mod_LSTM_SPY.py
+and evaluate how well each modified net trades Bitcoin.
+
+
+More advanced:
+In S10.Miscellaneous\LSTMStockPrice\notebook03d8d5df73_Geron_Chapter_15.ipynb
+and 
+in AurelienGueronOnRNNs.pdf
+Geron discusses other networks that may be good for sequence prediction:
+1. WaveNet and
+2. a Hybrid net combining GRU and 1-Dimensional convolutional layers
+you can try adapting one of these networks to the Bitcoin data in folder LSTMBitcoin
+and evaluate how well it trades Bitcoin.
+
+
+
+
