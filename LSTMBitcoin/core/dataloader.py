@@ -6,7 +6,7 @@ class DataLoader:
     """
     Dataloader for creating the train and test sets
     """
-    def __init__(self, dataset_fp, train_size, col_name_list, m_type, fut_steps=1):
+    def __init__(self, dataset_fp, train_size, col_name_list, model_type, fut_steps=1):
         self.df = pd.read_csv(dataset_fp, infer_datetime_format=True, parse_dates=['Date'], index_col=['Date'])
         self.index_split = int(train_size*len(self.df))
         self.train_df = self.df[col_name_list].iloc[:self.index_split,:]
@@ -16,7 +16,7 @@ class DataLoader:
         self.train_len = len(self.train_data)
         self.test_len = len(self.test_data)
         self.fut_steps = fut_steps
-        self.m_type = m_type
+        self.model_type = model_type
     
     def get_train_data(self, lookback_window, normalize):
         """
@@ -29,13 +29,16 @@ class DataLoader:
             data_x.append(x)
             data_y.append(y)
 
-        if self.m_type == 'seq2seq':
+        if self.model_type in ['seq2seq', 'gruconv']:
             data_y = np.array(data_y)
             Y = np.empty((len(data_x), lookback_window, self.fut_steps))
-            # print(data_y.shape, Y.shape)
             for step_ahead in range(self.fut_steps):
                 Y[..., step_ahead] = data_y[..., step_ahead:step_ahead + lookback_window, 0]
             data_y = Y
+
+        if self.model_type == 'gruconv':
+            data_y = data_y[:, 3::2]
+
         return np.array(data_x), np.array(data_y)
     
     def get_test_data(self, lookback_window, normalize):
@@ -54,7 +57,7 @@ class DataLoader:
         x = data_windows[:, :-self.fut_steps]
         y = data_windows[:, -self.fut_steps, 0]
 
-        if self.m_type == 'seq2seq':
+        if self.model_type in ['seq2seq', 'gruconv']:
             y = data_windows[:, lookback_window:, 0]
         
         return x, y
@@ -66,11 +69,10 @@ class DataLoader:
         
         window = self.train_data[i:i+lookback_window]
         window = self.normalize_windows(window, single_window=True)[0] if normalize else window
-        # print(window.shape)
         x = window[:-self.fut_steps]
         y = window[-self.fut_steps, [0]]
 
-        if self.m_type == 'seq2seq':
+        if self.model_type in ['seq2seq', 'gruconv']:
             y = window[:, [0]]
         
         return x, y

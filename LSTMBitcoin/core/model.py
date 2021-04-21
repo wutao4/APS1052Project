@@ -3,7 +3,7 @@ import time
 import logging
 import datetime as dt
 import numpy as np
-from tensorflow.keras.layers import Dense, Dropout, LSTM, SimpleRNN, TimeDistributed
+from tensorflow.keras.layers import Dense, Dropout, LSTM, SimpleRNN, TimeDistributed, Conv1D, GRU
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
@@ -41,6 +41,9 @@ class LSTMTimeSeriesModel:
             num_features = layer['num_features'] if 'num_features' in layer else None
             layer_type = layer['type'] if 'type' in layer else None
             return_seq = layer['return_seq'] if 'return_seq' in layer else None
+            kernel_size = layer['kernel_size'] if 'kernel_size' in layer else None
+            strides = layer['strides'] if 'strides' in layer else None
+            padding = layer['padding'] if 'padding' in layer else None
 
             if layer_type == 'Dense':
                 self.model.add(Dense(units=units, activation=activation))
@@ -58,10 +61,18 @@ class LSTMTimeSeriesModel:
                                          input_shape=(seq_len, num_features),
                                          return_sequences=return_seq
                                          ))
+            elif layer_type == 'Conv1D':
+                self.model.add(Conv1D(filters=units,
+                                      kernel_size=kernel_size,
+                                      strides=strides,
+                                      padding=padding,
+                                      input_shape=(seq_len, num_features)))
+            elif layer_type == 'GRU':
+                self.model.add(GRU(units=units, return_sequences=return_seq))
             elif layer_type == 'Dropout':
                 self.model.add(Dropout(rate=dropout))
 
-        metrics = [last_time_step_mse] if model_type == 'seq2seq' else None
+        metrics = [last_time_step_mse] if model_type in ['seq2seq', 'gruconv'] else None
         self.model.compile(loss=config['model']['loss'], optimizer=config['model']['optimizer'], metrics=metrics)
 
         time_taken = time.time() - now
@@ -109,14 +120,11 @@ class LSTMTimeSeriesModel:
 
     def predict_seq_to_seq(self, data):
         """
-
+        Making a sequence of predictions for each input sequence
         """
         logging.info('[MODEL]: Predicting Sequence-to-Sequence...')
-        print(data.shape)
         predicted = self.model.predict(data)
-        print(predicted.shape)
         predicted = predicted[:, -1, 0]
-        print(predicted.shape)
         predicted = np.reshape(predicted, (predicted.size,))
 
         return predicted

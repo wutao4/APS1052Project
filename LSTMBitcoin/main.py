@@ -32,8 +32,8 @@ def main():
         os.path.join('data', configs['data']['filename']),
         configs['data']['train_test_split'],
         configs['data']['columns'],
-        m_type=configs['model']['type'],
-        fut_steps=configs['data']['fut_steps'] if configs['model']['type'] == 'seq2seq' else 1
+        model_type=configs['model']['type'],
+        fut_steps=configs['data']['fut_steps'] if configs['model']['type'] in ['seq2seq', 'gruconv'] else 1
     )
 
     # Train x and y
@@ -41,8 +41,6 @@ def main():
         lookback_window=configs['data']['sequence_length'] - 1,
         normalize=configs['data']['normalize']
     )
-
-    print(x.shape, y.shape)
 
     # Instantiating the LSTMTimeSeriesModel model defined in the core/model module
     model = LSTMTimeSeriesModel()
@@ -61,7 +59,7 @@ def main():
     )
 
     # Predicting the results point by point
-    if configs['model']['type'] == 'seq2seq':
+    if configs['model']['type'] in ['seq2seq', 'gruconv']:
         predictions = model.predict_seq_to_seq(x_test)
         y_test = y_test[:, 0]
     else:
