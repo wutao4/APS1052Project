@@ -22,7 +22,7 @@
         ],
         "price_column": "Closing Price (USD)",
         "sequence_length": 21,
-        "fut_steps": 5,
+        "fut_steps": 3,
         "normalize": true
     },
     "training": {

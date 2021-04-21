@@ -32,12 +32,13 @@ def main():
         os.path.join('data', configs['data']['filename']),
         configs['data']['train_test_split'],
         configs['data']['columns'],
-        configs['data']['fut_steps'] if configs['model']['type'] == 'seq2seq' else 0
+        m_type=configs['model']['type'],
+        fut_steps=configs['data']['fut_steps'] if configs['model']['type'] == 'seq2seq' else 1
     )
 
     # Train x and y
     x, y = data.get_train_data(
-        lookback_window=configs['data']['sequence_length'],
+        lookback_window=configs['data']['sequence_length'] - 1,
         normalize=configs['data']['normalize']
     )
 
@@ -55,7 +56,7 @@ def main():
 
     # Extracting the x and y test data
     x_test, y_test = data.get_test_data(
-        lookback_window=configs['data']['sequence_length'],
+        lookback_window=configs['data']['sequence_length'] - 1,
         normalize=configs['data']['normalize']
     )
 
@@ -64,6 +65,8 @@ def main():
         predictions = model.predict_seq_to_seq(x_test)
         y_test = y_test[:, 0]
     else:
+        x_test = x_test[:-configs['data']['fut_steps'] + 1, :, :]
+        y_test = y_test[:-configs['data']['fut_steps'] + 1]
         predictions = model.predict_point_by_point(x_test)
 
     # Plotting the predictions compared to the actual values

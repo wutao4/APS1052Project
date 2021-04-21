@@ -112,6 +112,7 @@ class LSTMTimeSeriesModel:
 
         """
         logging.info('[MODEL]: Predicting Sequence-to-Sequence...')
+        print(data.shape)
         predicted = self.model.predict(data)
         print(predicted.shape)
         predicted = predicted[:, -1, 0]
