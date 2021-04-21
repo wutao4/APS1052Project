@@ -9,8 +9,8 @@ def plot_training_curves(history):
     epochs = range(1, len(train_loss_values) + 1)
     # Plotting training curves
     plt.clf()
-    plt.plot(epochs, train_loss_values, label="Train Loss")
-    plt.plot(epochs, val_loss_values, label="Val Loss")
+    plt.plot(epochs, train_loss_values, '.-', label="Train Loss")
+    plt.plot(epochs, val_loss_values, '.-', label="Val Loss")
     plt.legend()
     plt.xlabel("Epoch")
     plt.ylabel("MSE Loss")
@@ -95,21 +95,3 @@ def compute_metrics(df):
 
 def last_time_step_mse(Y_true, Y_pred):
     return mean_squared_error(Y_true[:, -1], Y_pred[:, -1])
-
-
-# convert history into a cube for series to series prediction
-def to_supervised(data, n_input, n_out):
-    n_input = n_input + n_out
-    X = list()
-    in_start = 0
-    # step over the entire history one time step at a time
-    for _ in range(len(data)):
-        # define the end of the input sequence
-        in_end = in_start + n_input
-        out_end = in_end + n_out
-        # ensure we have enough data for this instance
-        if out_end < len(data):
-            X.append(data[in_start:in_end, :])  # process all columns
-        # move along one time step
-        in_start += 1
-    return np.array(X)

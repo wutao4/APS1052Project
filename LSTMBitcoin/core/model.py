@@ -45,7 +45,7 @@ class LSTMTimeSeriesModel:
             if layer_type == 'Dense':
                 self.model.add(Dense(units=units, activation=activation))
             elif layer_type == 'TimeDistDense':
-                self.model.add(TimeDistributed(Dense(units=config['model']['fut_steps'], activation=activation)))
+                self.model.add(TimeDistributed(Dense(units=config['data']['fut_steps'], activation=activation)))
             elif layer_type == 'LSTM':
                 self.model.add(LSTM(units=units,
                                     activation=activation,
@@ -103,6 +103,19 @@ class LSTMTimeSeriesModel:
         """
         logging.info('[MODEL]: Predicting Point-by-Point...')
         predicted = self.model.predict(data)
+        predicted = np.reshape(predicted, (predicted.size,))
+
+        return predicted
+
+    def predict_seq_to_seq(self, data):
+        """
+
+        """
+        logging.info('[MODEL]: Predicting Sequence-to-Sequence...')
+        predicted = self.model.predict(data)
+        print(predicted.shape)
+        predicted = predicted[:, -1, 0]
+        print(predicted.shape)
         predicted = np.reshape(predicted, (predicted.size,))
 
         return predicted

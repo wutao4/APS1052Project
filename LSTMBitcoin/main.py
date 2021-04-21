@@ -32,7 +32,7 @@ def main():
         os.path.join('data', configs['data']['filename']),
         configs['data']['train_test_split'],
         configs['data']['columns'],
-        configs['model']['fut_steps'] if configs['model']['type'] == 'seq2seq' else 0
+        configs['data']['fut_steps'] if configs['model']['type'] == 'seq2seq' else 0
     )
 
     # Train x and y
@@ -60,7 +60,11 @@ def main():
     )
 
     # Predicting the results point by point
-    predictions = model.predict_point_by_point(x_test)
+    if configs['model']['type'] == 'seq2seq':
+        predictions = model.predict_seq_to_seq(x_test)
+        y_test = y_test[:, 0]
+    else:
+        predictions = model.predict_point_by_point(x_test)
 
     # Plotting the predictions compared to the actual values
     plot_results(predictions, y_test)

@@ -22,6 +22,7 @@
         ],
         "price_column": "Closing Price (USD)",
         "sequence_length": 21,
+        "fut_steps": 5,
         "normalize": true
     },
     "training": {
@@ -31,7 +32,6 @@
     },
     "model": {
         "type": "seq2seq",
-        "fut_steps": 5,
         "loss": "mse",
         "optimizer": "adam",
         "save_dir": "saved_models",

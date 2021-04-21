@@ -51,15 +51,10 @@ class DataLoader:
         data_windows = self.normalize_windows(data_windows, single_window=False) if normalize else data_windows
 
         x = data_windows[:, :-1 - self.fut_steps]
-        y = data_windows[:, -1, [0]]
+        y = data_windows[:, -1, 0]
 
         if self.fut_steps != 0:
-            y = data_windows[:, :-1, [0]]
-            Y = np.empty((len(x), lookback_window - 1, self.fut_steps))
-            # print(data_y.shape, Y.shape)
-            for step_ahead in range(self.fut_steps):
-                Y[..., step_ahead] = y[..., step_ahead:step_ahead + lookback_window - 1, 0]
-            y = Y
+            y = data_windows[:, lookback_window-1:-1, 0]
         
         return x, y
     
