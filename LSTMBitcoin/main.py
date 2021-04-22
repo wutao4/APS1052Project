@@ -84,6 +84,7 @@ def main():
     system_metrics, market_metrics = compute_metrics(new_df)
     print(f"System CAGR: {system_metrics[0] * 100:.1f}%")
     print(f"System Sharpe: {system_metrics[1]:.1f}")
+    print(f"System White Reality Check p value: {system_metrics[2]}")
 
     print(f"Market CAGR: {market_metrics[0] * 100:.1f}%")
     print(f"Market Sharpe: {market_metrics[1]:.1f}")

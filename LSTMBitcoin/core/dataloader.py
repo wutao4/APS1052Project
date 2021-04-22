@@ -9,8 +9,8 @@ class DataLoader:
     def __init__(self, dataset_fp, train_size, col_name_list, model_type, fut_steps=1):
         self.df = pd.read_csv(dataset_fp, infer_datetime_format=True, parse_dates=['Date'], index_col=['Date'])
         self.index_split = int(train_size*len(self.df))
-        self.train_df = self.df[col_name_list].iloc[:self.index_split,:]
-        self.test_df = self.df[col_name_list].iloc[self.index_split:,:]
+        self.train_df = self.df[col_name_list].iloc[:self.index_split, :]
+        self.test_df = self.df[col_name_list].iloc[self.index_split:, :]
         self.train_data = self.train_df.values
         self.test_data = self.test_df.values
         self.train_len = len(self.train_data)

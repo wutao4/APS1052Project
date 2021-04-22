@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow.keras.metrics import mean_squared_error
+from core.detrendPrice import detrendPrice
+from core.WhiteRealityCheckFor1 import bootstrap
 
 
 def plot_training_curves(history):
@@ -40,8 +42,8 @@ def concatenate_strat_to_test(test_df, trading_signal, seq_len):
     new_df = test_df.copy()
 
     # Start and stop length. Start at the seq_len or lookback window - 1
-    # This is because if the lookback window is set to 27, we are looking
-    # at the last 26 and then predicting for the 27th
+    # This is because if the lookback window is set to n, we are looking
+    # at the last n-1 and then predicting for the nth
     new_signal = np.hstack(([np.nan], trading_signal))
     start = seq_len - 2
     stop = start + len(new_signal)
@@ -66,6 +68,12 @@ def compute_returns(df, price_col):
     new_df['system_equity'] = np.cumprod(1 + new_df.system_returns) - 1
     new_df['mkt_equity'] = np.cumprod(1 + new_df.mkt_returns) - 1
 
+    # Detrend prices before calculating detrended returns
+    new_df['DetClose'] = detrendPrice(new_df[price_col]).values
+    # these are the detrended returns to be fed to White's Reality Check
+    new_df['DetRet'] = np.log(new_df['DetClose'] / new_df['DetClose'].shift(1))
+    # print(new_df['DetRet'])
+
     return new_df
 
 
@@ -81,13 +89,15 @@ def compute_metrics(df):
     system_cagr = (1 + new_df.system_equity.tail(n=1)) ** (252 / new_df.shape[0]) - 1
     new_df.system_returns = np.log(new_df.system_returns + 1)
     system_sharpe = np.sqrt(252) * np.mean(new_df.system_returns) / np.std(new_df.system_returns)
+    new_df['DetStrategy'] = new_df['DetRet'] * new_df['signal']
+    system_white_pvalue = bootstrap(new_df['DetStrategy'])
 
     new_df['mkt_equity'] = np.cumprod(1 + new_df.mkt_returns) - 1
     mkt_cagr = (1 + new_df.mkt_equity.tail(n=1)) ** (252 / new_df.shape[0]) - 1
     new_df.mkt_returns = np.log(new_df.mkt_returns + 1)
     mkt_sharpe = np.sqrt(252) * np.mean(new_df.mkt_returns) / np.std(new_df.mkt_returns)
 
-    system_metrics = (system_cagr[0], system_sharpe)
+    system_metrics = (system_cagr[0], system_sharpe, system_white_pvalue)
     market_metrics = (mkt_cagr[0], mkt_sharpe)
 
     return system_metrics, market_metrics
