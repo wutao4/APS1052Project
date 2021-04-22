@@ -1,3 +1,8 @@
+# Tao Wu, Zhoujie (Terrence) Zhao
+#
+# The utility file.
+# Contains helper functions such as computing returns and plotting results.
+
 import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow.keras.metrics import mean_squared_error

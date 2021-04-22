@@ -1,3 +1,7 @@
+# Tao Wu, Zhoujie (Terrence) Zhao
+#
+# The data loader class for reading data and creating train/test sets for each model specified in config.json.
+
 import pandas as pd
 import numpy as np
 
@@ -29,6 +33,7 @@ class DataLoader:
             data_x.append(x)
             data_y.append(y)
 
+        # modify the target data shape for sequence-to-sequence models
         if self.model_type in ['seq2seq', 'gruconv']:
             data_y = np.array(data_y)
             Y = np.empty((len(data_x), lookback_window, self.fut_steps))
@@ -36,6 +41,7 @@ class DataLoader:
                 Y[..., step_ahead] = data_y[..., step_ahead:step_ahead + lookback_window, 0]
             data_y = Y
 
+        # filter the target data for GRU+conv model due to the convolution
         if self.model_type == 'gruconv':
             data_y = data_y[:, 3::2]
 
@@ -57,6 +63,7 @@ class DataLoader:
         x = data_windows[:, :-self.fut_steps]
         y = data_windows[:, -self.fut_steps, 0]
 
+        # modify the target data shape for sequence-to-sequence models
         if self.model_type in ['seq2seq', 'gruconv']:
             y = data_windows[:, lookback_window:, 0]
         
@@ -72,6 +79,7 @@ class DataLoader:
         x = window[:-self.fut_steps]
         y = window[-self.fut_steps, [0]]
 
+        # modify the target data shape for sequence-to-sequence models
         if self.model_type in ['seq2seq', 'gruconv']:
             y = window[:, [0]]
         
@@ -88,6 +96,7 @@ class DataLoader:
             for col_i in range(window.shape[1]):
                 normalized_col = [((float(p) / float(window[0, col_i])) - 1) for p in window[:, col_i]]
                 normalized_window.append(normalized_col)
-            normalized_window = np.array(normalized_window).T # reshape and transpose array back into original multidimensional format
+            # reshape and transpose array back into original multidimensional format
+            normalized_window = np.array(normalized_window).T
             normalized_data.append(normalized_window)
         return np.array(normalized_data)

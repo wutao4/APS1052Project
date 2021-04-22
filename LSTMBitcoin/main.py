@@ -1,3 +1,10 @@
+# Tao Wu, Zhoujie (Terrence) Zhao
+#
+# The main code to run the program.
+# This file includes the pipeline of reading configurations, loading data, creating models,
+# training/testing, and plotting results.
+# To try different models or different parameters, modify the configuration file: config.json.
+
 import os
 import json
 import logging

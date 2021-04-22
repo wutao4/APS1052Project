@@ -1,3 +1,9 @@
+# Tao Wu, Zhoujie (Terrence) Zhao
+#
+# The model class for building RNN, LSTM, etc.
+# Note that this is a general framework for all types of models. To view the structures
+# of models, see model.layers in config.py.
+
 import os
 import time
 import logging
@@ -124,7 +130,7 @@ class LSTMTimeSeriesModel:
         """
         logging.info('[MODEL]: Predicting Sequence-to-Sequence...')
         predicted = self.model.predict(data)
-        predicted = predicted[:, -1, 0]
+        predicted = predicted[:, -1, 0]  # get the first (closest) prediction for each series of inputs
         predicted = np.reshape(predicted, (predicted.size,))
 
         return predicted

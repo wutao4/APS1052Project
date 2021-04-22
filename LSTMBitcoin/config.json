@@ -28,7 +28,7 @@
     "training": {
         "epochs": 40,
         "batch_size": 16,
-        "val_split":0.2
+        "val_split": 0.2
     },
     "model": {
         "type": "rnn",
