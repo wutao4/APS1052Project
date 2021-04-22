@@ -31,7 +31,7 @@
         "val_split":0.2
     },
     "model": {
-        "type": "gruconv",
+        "type": "rnn",
         "loss": "mse",
         "optimizer": "adam",
         "save_dir": "saved_models",
